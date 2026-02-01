@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface UserService {
 
-    User create(String name, String email, String password);
+    void create(String name, String email, String password);
 
     List<User> getAll();
 

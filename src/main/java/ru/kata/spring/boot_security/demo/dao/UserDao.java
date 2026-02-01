@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface UserDao {
 
-    User saveUser(User user);
+    void saveUser(User user);
 
     List<User> getAll();
 

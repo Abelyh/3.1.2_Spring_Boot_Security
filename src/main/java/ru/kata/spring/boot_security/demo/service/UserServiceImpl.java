@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public User create(String name, String email, String password) {
+    public void create(String name, String email, String password) {
         User user = new User();
         user.setName(name);
         user.setEmail(email);
@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
             userDao.saveRole(role);
         }
         user.getRoles().add(role);
-        return userDao.saveUser(user);
+         userDao.saveUser(user);
     }
 
     @Override
