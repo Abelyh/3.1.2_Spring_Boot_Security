@@ -28,7 +28,7 @@ public class WebSecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         // ПУБЛИЧНЫЕ пути (важно указать перед защищенными!)
-                        .requestMatchers( "/","/registration").permitAll()
+                        .requestMatchers( "/").permitAll()
                         // СТАТИЧЕСКИЕ РЕСУРСЫ (CSS, JS, изображения)
                         .requestMatchers("/css/**").permitAll()
                         // ЗАЩИЩЕННЫЕ пути

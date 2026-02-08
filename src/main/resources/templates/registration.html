@@ -1,9 +1,50 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en" xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>Create account</title>-->
+<!--    <link th:href="@{/css/authorization.css}" rel="stylesheet">-->
+<!--</head>-->
+<!--<body>-->
+<!--<div class="page-wrapper">-->
+<!--    <div class="container">-->
+<!--        <div class="header-container">-->
+<!--            <h2 class="header-container__text">Registration</h2>-->
+<!--        </div>-->
+<!--        <div class="form-container">-->
+<!--            <form action="/registration" method="post" class="form-container__form">-->
+<!--&lt;!&ndash;                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />&ndash;&gt;-->
+<!--                <div class="form-container__input-wrapper">-->
+<!--                    <input type="text" name="name" placeholder="Enter your name" class="form-container__input" required>-->
+<!--                </div>-->
+<!--                <div class="form-container__input-wrapper">-->
+<!--                    <input type="email" name="email" placeholder="Enter your email" class="form-container__input"-->
+<!--                           required>-->
+<!--                </div>-->
+<!--                <div class="form-container__input-wrapper">-->
+<!--                    <input type="password" name="password" placeholder="Enter your password"-->
+<!--                           class="form-container__input" required>-->
+<!--                </div>-->
+<!--                <div class="form-container__button-wrapper">-->
+<!--                    <button type="submit" class="form-container__button">Sign up</button>-->
+<!--                </div>-->
+<!--            </form>-->
+<!--        </div>-->
+<!--        <div class="footer-link-container">-->
+<!--            <span class="footer-link-container__text">Already have an account? <a href="/login"-->
+<!--                                                                                  class="footer-link-container__link">Log in</a></span>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+<!--</body>-->
+<!--</html>-->
+
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Create account</title>
-    <link th:href="@{/css/authorization.css}" rel="stylesheet">
+    <link th:href="@{/css/authorization.css}" rel="stylesheet" />
 </head>
 <body>
 <div class="page-wrapper">
@@ -12,27 +53,41 @@
             <h2 class="header-container__text">Registration</h2>
         </div>
         <div class="form-container">
-            <form action="/registration" method="post" class="form-container__form">
-<!--                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />-->
+            <form th:action="@{/admin/registration}" method="post" class="form-container__form">
+                <!-- Имя -->
                 <div class="form-container__input-wrapper">
-                    <input type="text" name="name" placeholder="Enter your name" class="form-container__input" required>
+                    <input type="text" name="name" placeholder="Enter your name" class="form-container__input" required
+                           th:value="${name}">
                 </div>
+                <!-- Email -->
                 <div class="form-container__input-wrapper">
-                    <input type="email" name="email" placeholder="Enter your email" class="form-container__input"
-                           required>
+                    <input type="email" name="email" placeholder="Enter your email" class="form-container__input" required
+                           th:value="${email}">
                 </div>
+                <!-- Пароль -->
                 <div class="form-container__input-wrapper">
-                    <input type="password" name="password" placeholder="Enter your password"
-                           class="form-container__input" required>
+                    <input type="password" name="password" placeholder="Enter your password" class="form-container__input" required>
                 </div>
+                <!-- Роли -->
+                <div class="form-container__input-wrapper">
+                    <label>Select roles:</label>
+                    <div>
+                        <input type="checkbox" name="roleIds" value="1" id="role1">
+                        <label for="role1">ADMIN</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" name="roleIds" value="2" id="role2">
+                        <label for="role2">USER</label>
+                    </div>
+                </div>
+                <!-- Кнопка отправки -->
                 <div class="form-container__button-wrapper">
                     <button type="submit" class="form-container__button">Sign up</button>
                 </div>
             </form>
         </div>
         <div class="footer-link-container">
-            <span class="footer-link-container__text">Already have an account? <a href="/login"
-                                                                                  class="footer-link-container__link">Log in</a></span>
+            <span class="footer-link-container__text">Already have an account? <a href="/login" class="footer-link-container__link">Log in</a></span>
         </div>
     </div>
 </div>

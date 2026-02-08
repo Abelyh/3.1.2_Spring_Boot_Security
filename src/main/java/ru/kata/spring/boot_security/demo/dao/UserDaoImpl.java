@@ -1,77 +1,45 @@
 package ru.kata.spring.boot_security.demo.dao;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
-import jakarta.persistence.PersistenceContext;
-import org.springframework.stereotype.Repository;
-import ru.kata.spring.boot_security.demo.model.Role;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import ru.kata.spring.boot_security.demo.repository.UserRepository;
 import ru.kata.spring.boot_security.demo.model.User;
-
 
 import java.util.List;
 import java.util.Optional;
 
-@Repository
+@Component
 public class UserDaoImpl implements UserDao {
 
-    @PersistenceContext
-    private EntityManager manager;
+    private final UserRepository repository;
+
+    public UserDaoImpl(UserRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     public void saveUser(User user) {
-        manager.persist(user);
+        repository.save(user);
     }
 
     @Override
     public List<User> getAll() {
-        return manager.createQuery("From User", User.class).getResultList();
-    }
-
-
-    @Override
-    public Optional<User> getById(Long id) {
-        return Optional.ofNullable(manager.find(User.class, id));
+        return repository.findAll();
     }
 
     @Override
-    public void update(User userById) {
-        manager.merge(userById);
+    public Optional<User> findById(Long id) {
+        return repository.findById(id);
     }
 
     @Override
     public void delete(User user) {
-        manager.remove(user);
+        repository.delete(user);
     }
 
     @Override
-    public void saveRole(Role role) {
-        manager.persist(role);
+    public Optional<User> findByEmail(String email) {
+       return repository.findByEmail(email);
     }
 
-    @Override
-    public User findByUserName(String email) {
-        String jpql = "SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.roles WHERE u.email = :email";
-        return manager.createQuery(jpql, User.class)
-                .setParameter("email", email)
-                .getSingleResult();
-    }
-
-    @Override
-    public Role findRole(String roleName) {
-        try {
-            return manager.createQuery(
-                            "SELECT r FROM Role r WHERE r.name = :roleName",
-                            Role.class
-                    )
-                    .setParameter("roleName", roleName)
-                    .getSingleResult();
-        } catch (NoResultException e) {
-            return null;
-        }
-    }
-
-    @Override
-    public void deleteRole(Role role) {
-        manager.remove(role);
-    }
 }

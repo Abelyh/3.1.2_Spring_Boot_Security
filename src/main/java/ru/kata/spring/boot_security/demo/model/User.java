@@ -36,13 +36,6 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
-
-    public User(String name, String email, String password) {
-        this.name = name;
-        this.email = email;
-        this.password = password;
-    }
-
     // возвращает роли пользователя для спринг секьюрити
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

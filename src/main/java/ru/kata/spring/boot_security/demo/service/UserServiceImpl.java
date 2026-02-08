@@ -3,40 +3,35 @@ package ru.kata.spring.boot_security.demo.service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.kata.spring.boot_security.demo.dao.UserDao;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserDao userDao;
+    private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    public UserServiceImpl(UserDao userDao, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserDao userDao, RoleService roleService, PasswordEncoder passwordEncoder) {
         this.userDao = userDao;
+        this.roleService = roleService;
         this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     @Transactional
-    public void create(String name, String email, String password) {
-        User user = new User();
-        user.setName(name);
-        user.setEmail(email);
-        user.setPassword(passwordEncoder.encode(password));
-        Role role = userDao.findRole("ADMIN");
-        if (role == null) {
-            role = new Role("ADMIN");
-            userDao.saveRole(role);
-        }
-        user.getRoles().add(role);
-         userDao.saveUser(user);
+    public void create(User user, List<Long> roleIds) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        Set<Role> allById = roleService.findAllById(roleIds);
+        user.setRoles(allById);
+        userDao.saveUser(user);
     }
 
     @Override
@@ -47,61 +42,32 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void update(Long id, User updateUser) {
-        User userById = getById(id);
+    public void update(Long id, User updateUser, List<Long> roleIds) {
+        User userById = findById(id);
         userById.setName(updateUser.getName());
         userById.setEmail(updateUser.getEmail());
-        userDao.update(userById);
-    }
-
-    @Override
-    @Transactional
-    public void addRole(Long id, String roleName) {
-        User userById = getById(id);
-        Role findRole = userDao.findRole(roleName);
-        if (findRole == null) {
-            findRole = new Role(roleName);
-            userDao.saveRole(findRole);
-        } else {
-            boolean contains = userById.getRoles().contains(findRole);
-            if (contains) {
-                return;
-            }
-        }
-        userById.getRoles().add(findRole);
-        userDao.update(userById);
-    }
-
-    @Override
-    @Transactional
-    public void deleteRole(Long id, String name) {
-        User userById = userDao.getById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Entity with id " + id + " not found"));
-        Role role = userDao.findRole(name);
-        userById.getRoles().remove(role);
-        userDao.update(userById);
+        Set<Role> roles = roleIds.stream().map(roleService::findRole).collect(Collectors.toSet());
+        userById.setRoles(roles);
+        userDao.saveUser(userById);
     }
 
     @Override
     @Transactional
     public void delete(Long id) {
-        User userById = getById(id);
+        User userById = findById(id);
         userDao.delete(userById);
     }
 
+    // для userDetailsServiceImpl
     @Override
     @Transactional(readOnly = true)
-    public User getById(Long id) {
-        return userDao.getById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Entity with id " + id + " not found"));
+    public User findByEmail(String email) {
+        return userDao.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Not found"));
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public User findByUserName(String username) {
-        if (username == null) {
-            throw new EntityNotFoundException();
-        }
-        return userDao.findByUserName(username);
+    public User findById(Long id) {
+        return userDao.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Entity with id " + id + " not found"));
     }
 }

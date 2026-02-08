@@ -1,103 +1,3 @@
-<!--<!DOCTYPE html>-->
-<!--<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">-->
-<!--<head>-->
-<!--    <meta charset="UTF-8"/>-->
-<!--    <title>Update User</title>-->
-<!--</head>-->
-<!--<body>-->
-<!--<h1>Edit user</h1>-->
-
-<!--<form th:method="POST" th:action="@{/admin/update}" th:object="${user}">-->
-<!--    <input type="hidden" name="id" th:value="${user.id}"/>-->
-
-<!--    &lt;!&ndash; Скрытое поле для отслеживания, была ли изменена роль &ndash;&gt;-->
-<!--    <input type="hidden" name="roleChanged" id="roleChanged" value="false"/>-->
-
-<!--    <label for="name">Name:</label>-->
-<!--    <input type="text" id="name" th:field="*{name}"/>-->
-<!--    <br/><br/>-->
-
-<!--    <label for="email">Email:</label>-->
-<!--    <input type="text" id="email" th:field="*{email}"/>-->
-<!--    <br/><br/>-->
-
-<!--    &lt;!&ndash; Поле для ввода роли с обработкой изменений &ndash;&gt;-->
-<!--    <label for="roleName">Role Name:</label>-->
-<!--    <input type="text" id="roleName" name="roleName"-->
-<!--           th:value="${user.roles[0]?.name}"-->
-<!--           oninput="document.getElementById('roleChanged').value = 'true';"-->
-<!--           placeholder="Enter role name (USER, ADMIN)"/>-->
-<!--    <br/><br/>-->
-
-<!--    <input type="submit" value="Update"/>-->
-<!--</form>-->
-
-<!--<br/>-->
-<!--<hr/>-->
-
-<!--<h1>Delete user</h1>-->
-<!--<form th:method="POST" th:action="@{/admin/delete}">-->
-<!--    <input type="hidden" name="id" th:value="${user.id}"/>-->
-<!--    <input type="submit" value="Delete"/>-->
-<!--</form>-->
-
-<!--</body>-->
-<!--</html>-->
-
-<!--<!DOCTYPE html>-->
-<!--<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">-->
-<!--<head>-->
-<!--    <meta charset="UTF-8"/>-->
-<!--    <title>Update User</title>-->
-<!--</head>-->
-<!--<body>-->
-<!--<h1>Edit user</h1>-->
-
-<!--<form th:method="POST" th:action="@{/admin/update}" th:object="${user}">-->
-<!--    <input type="hidden" name="id" th:value="${user.id}"/>-->
-
-<!--    <label for="name">Name:</label>-->
-<!--    <input type="text" id="name" th:field="*{name}"/>-->
-<!--    <br/><br/>-->
-
-<!--    <label for="email">Email:</label>-->
-<!--    <input type="text" id="email" th:field="*{email}"/>-->
-<!--    <br/><br/>-->
-
-<!--    &lt;!&ndash; Отдельные поля для каждой роли &ndash;&gt;-->
-<!--    <label>Roles:</label><br/>-->
-
-<!--    <div th:each="role, roleStat : ${user.roles}">-->
-<!--        <input type="text"-->
-<!--               th:name="roles"-->
-<!--               th:value="${role.name}"-->
-<!--               placeholder="Role name"/>-->
-<!--        <br/>-->
-<!--    </div>-->
-
-<!--    &lt;!&ndash; Поле для добавления новой роли &ndash;&gt;-->
-<!--    <div id="newRoles">-->
-<!--        <input type="text" name="roles" placeholder="Add new role (optional)"/>-->
-<!--        <br/>-->
-<!--    </div>-->
-
-<!--    <br/>-->
-<!--    <input type="submit" value="Update"/>-->
-<!--</form>-->
-
-<!--<br/>-->
-<!--<hr/>-->
-
-
-<!--<h1>Delete user</h1>-->
-<!--<form th:method="POST" th:action="@{/admin/delete}">-->
-<!--    <input type="hidden" name="id" th:value="${user.id}"/>-->
-<!--    <input type="submit" value="Delete"/>-->
-<!--</form>-->
-
-<!--</body>-->
-<!--</html>-->
-
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -105,48 +5,35 @@
     <title>Update User</title>
 </head>
 <body>
-<h1>Edit user</h1>
+<h1>Edit user: <span th:text="${user.name}"></span></h1>
 
-<form th:method="POST" th:action="@{/admin/update}" th:object="${user}">
+<form th:method="POST" th:action="@{/admin/update}">
     <input type="hidden" name="id" th:value="${user.id}"/>
 
     <label for="name">Name:</label>
-    <input type="text" id="name" th:field="*{name}"/>
+    <input type="text" id="name" name="name" th:value="${user.name}"/>
     <br/><br/>
 
     <label for="email">Email:</label>
-    <input type="text" id="email" th:field="*{email}"/>
+    <input type="text" id="email" name="email" th:value="${user.email}"/>
     <br/><br/>
 
+    <!-- ВЫБОР РОЛЕЙ (чекбоксы) -->
+    <h3>Select Roles:</h3>
+    <div th:each="role : ${roles}">
+        <label>
+            <input type="checkbox"
+                   name="roleIds"
+                   th:value="${role.id}"
+                   th:checked="${#lists.contains(userRoleIds, role.id)}"/>
+            <span th:text="${role.name}"></span>
+        </label>
+        <br/>
+    </div>
     <br/>
+
     <input type="submit" value="Update"/>
 </form>
-
-<br/>
-<hr/>
-
-<!-- Форма для добавления роли -->
-<h3>Add role</h3>
-<form th:method="POST" th:action="@{/admin/addRole}">
-    <input type="hidden" name="id" th:value="${user.id}"/>
-    <input type="text" name="roleName" placeholder="Название роли"/>
-    <input type="submit" value="Add"/>
-</form>
-
-<br/>
-<hr/>
-
-<!-- Формы для удаления ролей -->
-<h3>Delete role</h3>
-<div th:each="role : ${user.roles}">
-    <span th:text="${role.name}"></span>
-    <form th:method="POST" th:action="@{/admin/deleteRole}" style="display:inline;">
-        <input type="hidden" name="id" th:value="${user.id}"/>
-        <input type="hidden" name="roleName" th:value="${role.name}"/>
-        <button type="submit">×</button>
-    </form>
-    <br/>
-</div>
 
 <br/>
 <hr/>
@@ -156,10 +43,11 @@
     <input type="hidden" name="id" th:value="${user.id}"/>
     <input type="submit" value="Delete"/>
 </form>
-<br/>
 
+<br/>
+<hr/>
 <div class="actions">
-    <a th:href="@{/logout}" class="btn btn-danger">Выйти</a>
+    <a th:href="@{/logout}">Logout</a>
 </div>
 </body>
 </html>
