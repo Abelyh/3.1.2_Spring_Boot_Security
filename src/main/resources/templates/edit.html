@@ -44,7 +44,7 @@
             <input type="checkbox"
                    name="roleIds"
                    th:value="${role.id}"
-                   th:checked="${#lists.contains(userRoleIds, role.id)}"/>
+                   th:checked="${user.roles.contains(role)}"/>
             <span th:text="${role.name}"></span>
         </label>
         <br/>

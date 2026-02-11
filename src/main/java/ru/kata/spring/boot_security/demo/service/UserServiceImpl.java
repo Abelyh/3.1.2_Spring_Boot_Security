@@ -1,26 +1,25 @@
 package ru.kata.spring.boot_security.demo.service;
 
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import ru.kata.spring.boot_security.demo.dao.UserDao;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
+import ru.kata.spring.boot_security.demo.repository.UserRepository;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final UserDao userDao;
+    private final UserRepository userRepository;
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserDao userDao, RoleService roleService, PasswordEncoder passwordEncoder) {
-        this.userDao = userDao;
+    public UserServiceImpl(UserRepository userRepository, RoleService roleService, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
         this.roleService = roleService;
         this.passwordEncoder = passwordEncoder;
     }
@@ -31,13 +30,14 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         Set<Role> allById = roleService.findAllById(roleIds);
         user.setRoles(allById);
-        userDao.saveUser(user);
+        userRepository.save(user);
+
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<User> getAll() {
-        return userDao.getAll();
+        return userRepository.findAll();
     }
 
     @Override
@@ -46,28 +46,28 @@ public class UserServiceImpl implements UserService {
         User userById = findById(id);
         userById.setName(updateUser.getName());
         userById.setEmail(updateUser.getEmail());
-        Set<Role> roles = roleIds.stream().map(roleService::findRole).collect(Collectors.toSet());
+        Set<Role> roles = roleService.findAllById(roleIds);
         userById.setRoles(roles);
-        userDao.saveUser(userById);
+        userRepository.save(userById);
     }
 
     @Override
     @Transactional
     public void delete(Long id) {
         User userById = findById(id);
-        userDao.delete(userById);
+        userRepository.delete(userById);
     }
 
     // для userDetailsServiceImpl
     @Override
     @Transactional(readOnly = true)
     public User findByEmail(String email) {
-        return userDao.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Not found"));
+        return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Not found"));
     }
 
     @Override
     public User findById(Long id) {
-        return userDao.findById(id)
+        return userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Entity with id " + id + " not found"));
     }
 }

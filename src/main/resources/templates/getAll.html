@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -43,11 +44,12 @@
 <br/><br/>
 
 <!-- Проверка наличия пользователей -->
-<div th:if="${#lists.isEmpty(users)}">
-    <p>No users found.</p>
-</div>
+<!--<div th:if="${#lists.isEmpty(users)}">-->
+<!--    <p>No users found.</p>-->
+<!--</div>-->
 
-<div th:unless="${#lists.isEmpty(users)}">
+<!--<div th:unless="${#lists.isEmpty(users)}">-->
+<div>
     <table>
         <thead>
         <tr>
@@ -84,7 +86,7 @@
     </table>
 </div>
 <hr/>
-<a href="/admin/registration" class="btn">Создать нового пользователя</a>
+<a href="/admin/create" class="btn">Создать нового пользователя</a>
 <br/><br/>
 <div class="actions">
     <a th:href="@{/logout}" class="btn btn-danger">Выйти</a>

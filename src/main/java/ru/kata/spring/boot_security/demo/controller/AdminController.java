@@ -9,7 +9,6 @@ import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/admin")
@@ -23,18 +22,16 @@ public class AdminController {
         this.roleService = roleService;
     }
 
-
-    @GetMapping("/registration")
+    @GetMapping("/create")
     public String showForm() {
-        return "registration";
+        return "create";
     }
 
-
-    @PostMapping("/registration")
+    @PostMapping("/create")
     String createUserAccount(@ModelAttribute("user") User user,
                              @RequestParam("roleIds") List<Long> roleIds) {
         service.create(user, roleIds);
-        return "redirect:/login";
+        return "redirect:/admin";
     }
 
     @GetMapping
@@ -47,13 +44,8 @@ public class AdminController {
     public String edit(@RequestParam("id") Long id, Model model) {
         User user = service.findById(id);
         List<Role> roles = roleService.findAll();
-
-        List<Long> userRoleIds = user.getRoles().stream()
-                .map(Role::getId)
-                .collect(Collectors.toList());
         model.addAttribute("roles", roles);
         model.addAttribute("user", user);
-        model.addAttribute("userRoleIds", userRoleIds);
         return "edit";
     }
 

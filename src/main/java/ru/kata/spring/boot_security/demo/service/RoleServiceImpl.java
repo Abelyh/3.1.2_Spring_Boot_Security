@@ -3,8 +3,8 @@ package ru.kata.spring.boot_security.demo.service;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.kata.spring.boot_security.demo.dao.RoleDaoImpl;
 import ru.kata.spring.boot_security.demo.model.Role;
+import ru.kata.spring.boot_security.demo.repository.RoleRepository;
 
 import java.util.List;
 import java.util.Set;
@@ -12,39 +12,26 @@ import java.util.Set;
 @Service
 public class RoleServiceImpl implements RoleService {
 
-    private final RoleDaoImpl roleDao;
+    private final RoleRepository roleRepository;
 
-    public RoleServiceImpl(RoleDaoImpl roleDao) {
-        this.roleDao = roleDao;
+    public RoleServiceImpl(RoleRepository roleRepository) {
+        this.roleRepository = roleRepository;
     }
 
     @Override
     @Transactional
     public Set<Role> findAllById(List<Long> id) {
-        return roleDao.findAllById(id);
+        return roleRepository.findByIdIn(id);
     }
 
     @Override
     public List<Role> findAll() {
-        return roleDao.findAll();
+        return roleRepository.findAll();
     }
-
-//    @Override
-//    @Transactional
-//    public void saveRole(Role role) {
-//        roleDao.saveRole(role);
-//    }
-//
-//    @Override
-//    @Transactional
-//    public void deleteRole(Long id) {
-//        Role role = findRole(id);
-//        roleDao.deleteRole(role);
-//    }
 
     @Override
     @Transactional(readOnly = true)
     public Role findRole(Long id) {
-        return roleDao.findById(id).orElseThrow(() -> new EntityNotFoundException("Not found"));
+        return roleRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Not found"));
     }
 }
