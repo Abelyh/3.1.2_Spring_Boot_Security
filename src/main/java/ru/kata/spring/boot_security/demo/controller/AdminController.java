@@ -22,11 +22,6 @@ public class AdminController {
         this.roleService = roleService;
     }
 
-    @GetMapping("/create")
-    public String showForm() {
-        return "create";
-    }
-
     @PostMapping("/create")
     String createUserAccount(@ModelAttribute("user") User user,
                              @RequestParam("roleIds") List<Long> roleIds) {

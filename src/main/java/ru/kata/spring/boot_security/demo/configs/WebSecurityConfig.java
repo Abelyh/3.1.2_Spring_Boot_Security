@@ -33,7 +33,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/css/**").permitAll()
                         // ЗАЩИЩЕННЫЕ пути
                         .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/create", "/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
