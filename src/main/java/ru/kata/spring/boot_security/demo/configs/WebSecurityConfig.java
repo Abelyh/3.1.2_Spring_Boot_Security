@@ -3,10 +3,9 @@ package ru.kata.spring.boot_security.demo.configs;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -14,13 +13,14 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
+
     private final SuccessUserHandler successUserHandler;
+    private final UserDetailsService userDetailsService;
 
-
-    public WebSecurityConfig(SuccessUserHandler successUserHandler) {
+    public WebSecurityConfig(SuccessUserHandler successUserHandler, UserDetailsService userDetailsService) {
         this.successUserHandler = successUserHandler;
+        this.userDetailsService = userDetailsService;
     }
-
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -33,7 +33,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/css/**").permitAll()
                         // ЗАЩИЩЕННЫЕ пути
                         .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/create", "/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -45,8 +45,9 @@ public class WebSecurityConfig {
                 .logout(logout -> logout
                         .logoutUrl("/logout")// 1. Перехватываем запрос на этот URL
                         .logoutSuccessUrl("/index")          // 2. После выхода редиректим сюда
-                        .permitAll()                   // 3. Разрешаем доступ всем (выходить могут все)
-                );
+                        .permitAll()                        // 3. Разрешаем доступ всем (выходить могут все)
+                )
+                .userDetailsService(userDetailsService);
 
         return http.build();
     }
